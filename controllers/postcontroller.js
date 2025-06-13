@@ -1,25 +1,33 @@
-// const { posts } = require("../data/db");
 const connection = require("../data/db");
 
 const index = (req, res) => {
-  const sql = "SELECT * FROM `blog`";
+  const sql = "SELECT * FROM posts";
+
   connection.query(sql, (err, results) => {
-    if (err) throw err;
+    console.log(results);
+
+    if (err) return res.status(500).json({ error: "error executing query" });
+
+    res.json({
+      data: results,
+      status: 200,
+    });
   });
 };
 
 const show = (req, res) => {
-  // const id = parseInt(req.params.id);
-  // const post = posts.find((currentPost) => currentPost.id === id);
-  // if (!post) {
-  //   res.status(404).json({
-  //     succes: "OK",
-  //     status: "404",
-  //     message: "Post Not Found",
-  //   });
-  //   return;
-  // }
-  // res.json({ status: 200, data: post });
+  const postId = parseInt(req.params.id);
+
+  const sqlPost = `SELECT * FROM posts WHERE id=?`;
+
+  connection.query(sqlPost, [postId], (err, results) => {
+    if (err) return res.status(500).json({ error: "error executing query" });
+    if (results.length === 0)
+      return res.status(404).json({ error: "post not found" });
+  });
+  const post = result[0];
+
+  res.json({ status: 200, data: post });
 };
 
 const store = (req, res) => {
